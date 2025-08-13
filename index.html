@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steering Motor Torque Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 640px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Steering Motor Torque Calculator</h1>
+            <p class="mt-2 text-md text-gray-600">Estimate the torque required for a single steering motor.</p>
+        </header>
+
+        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            
+            <!-- Input Section -->
+            <div id="input-form">
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-3 text-gray-800">Robot & Wheel Parameters</h2>
+                
+                <div class="input-group">
+                    <!-- Robot Parameters -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="robotMass" class="block text-sm font-medium text-gray-700">Total Robot Mass (kg)</label>
+                            <input type="number" id="robotMass" value="50" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="numWheels" class="block text-sm font-medium text-gray-700">Number of Wheels</label>
+                            <input type="number" id="numWheels" value="4" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="frictionCoeff" class="block text-sm font-medium text-gray-700">Coefficient of Friction (μ)</label>
+                            <input type="number" id="frictionCoeff" value="0.7" step="0.1" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                         <div>
+                            <label for="wheelAngularAccel" class="block text-sm font-medium text-gray-700">Wheel Angular Acceleration (rad/s²)</label>
+                            <input type="number" id="wheelAngularAccel" value="5" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                    </div>
+
+                    <!-- Wheel Parameters -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="wheelRadius" class="block text-sm font-medium text-gray-700">Wheel Radius (m)</label>
+                            <input type="number" id="wheelRadius" value="0.1" step="0.01" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="wheelMass" class="block text-sm font-medium text-gray-700">Mass of One Wheel (kg)</label>
+                            <input type="number" id="wheelMass" value="1.5" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="wheelWidth" class="block text-sm font-medium text-gray-700">Wheel Width (m)</label>
+                            <input type="number" id="wheelWidth" value="0.05" step="0.01" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold mt-8 mb-6 border-b pb-3 text-gray-800">Motor & System Parameters</h2>
+                <div class="input-group">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="gearboxRatio" class="block text-sm font-medium text-gray-700">Steering Gearbox Ratio (N:1)</label>
+                            <input type="number" id="gearboxRatio" value="20" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                         <div>
+                            <label for="safetyFactor" class="block text-sm font-medium text-gray-700">Safety Factor</label>
+                            <input type="number" id="safetyFactor" value="1.5" step="0.1" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="motorEfficiency" class="block text-sm font-medium text-gray-700">Motor & Gearbox Efficiency (%)</label>
+                            <input type="number" id="motorEfficiency" value="80" class="mt-1 block w-full bg-gray-100 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calculate Button -->
+                <div class="mt-8 text-center">
+                    <button id="calculateBtn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Calculate Torque
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="mt-8 hidden">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-3 text-gray-800">Calculation Results</h2>
+                <div class="bg-indigo-50 p-6 rounded-lg space-y-4">
+                    <div class="flex justify-between items-center text-lg">
+                        <span class="font-medium text-gray-700">Torque per Wheel (at wheel):</span>
+                        <span id="torquePerWheelResult" class="font-bold text-indigo-800"></span>
+                    </div>
+                    <div class="flex justify-between items-center text-lg">
+                        <span class="font-medium text-gray-700">Total Torque (at wheel):</span>
+                        <span id="totalTorqueResult" class="font-bold text-indigo-800"></span>
+                    </div>
+                    <hr class="my-4 border-indigo-200">
+                    <div class="flex justify-between items-center text-2xl bg-white p-4 rounded-md shadow-inner">
+                        <span class="font-bold text-gray-900">Required Motor Torque:</span>
+                        <span id="motorTorqueResult" class="font-extrabold text-indigo-600"></span>
+                    </div>
+                </div>
+                 <div id="error-message" class="mt-4 text-center text-red-600 font-medium hidden"></div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>This calculator provides an estimate. Real-world factors may influence actual requirements.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const errorMessageDiv = document.getElementById('error-message');
+
+        const inputs = {
+            robotMass: document.getElementById('robotMass'),
+            numWheels: document.getElementById('numWheels'),
+            frictionCoeff: document.getElementById('frictionCoeff'),
+            wheelRadius: document.getElementById('wheelRadius'),
+            wheelMass: document.getElementById('wheelMass'),
+            wheelWidth: document.getElementById('wheelWidth'),
+            wheelAngularAccel: document.getElementById('wheelAngularAccel'),
+            gearboxRatio: document.getElementById('gearboxRatio'),
+            safetyFactor: document.getElementById('safetyFactor'),
+            motorEfficiency: document.getElementById('motorEfficiency'),
+        };
+
+        const outputs = {
+            torquePerWheel: document.getElementById('torquePerWheelResult'),
+            totalTorque: document.getElementById('totalTorqueResult'),
+            motorTorque: document.getElementById('motorTorqueResult'),
+        };
+
+        // --- Event Listener ---
+        calculateBtn.addEventListener('click', () => {
+            // 1. Get and validate all input values
+            const values = {};
+            let isValid = true;
+            for (const key in inputs) {
+                const value = parseFloat(inputs[key].value);
+                if (isNaN(value) || value <= 0) {
+                    inputs[key].classList.add('border-red-500', 'ring-red-500');
+                    isValid = false;
+                } else {
+                    inputs[key].classList.remove('border-red-500', 'ring-red-500');
+                    values[key] = value;
+                }
+            }
+
+            if (!isValid) {
+                errorMessageDiv.textContent = 'Please fill in all fields with valid, positive numbers.';
+                errorMessageDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            errorMessageDiv.classList.add('hidden');
+
+            // 2. Perform the calculation
+            const g = 9.81; // Acceleration due to gravity (m/s^2)
+
+            // --- Torque to overcome friction (Scrub Torque) ---
+            // This is the torque required to pivot the wheel against the ground.
+            // Normal force is the force exerted by the ground on one wheel.
+            const normalForcePerWheel = (values.robotMass * g) / values.numWheels;
+            
+            // Frictional force resisting the pivot.
+            const frictionalForce = normalForcePerWheel * values.frictionCoeff;
+            
+            // The moment arm for the scrub torque is complex. A common engineering approximation
+            // is to use a fraction of the wheel width. We'll use 1/4 of the width.
+            const scrubMomentArm = values.wheelWidth / 4; 
+            const scrubTorque = frictionalForce * scrubMomentArm;
+
+            // --- Torque to accelerate the wheel's own inertia ---
+            // This is the torque to physically turn the wheel mass itself.
+            // We assume the wheel is a solid disk/cylinder for inertia calculation.
+            const wheelInertia = (0.25 * values.wheelMass * Math.pow(values.wheelRadius, 2))+((1/12)* values.wheelMass * Math.pow(values.wheelWidth, 2));
+            const accelerationTorque = wheelInertia * values.wheelAngularAccel;
+
+            // --- Total torque required AT A SINGLE WHEEL ---
+            const torquePerWheel = scrubTorque + accelerationTorque;
+            
+            // Assuming one motor steers one wheel. If one motor steers two wheels (e.g., Ackermann),
+            // this would be torquePerWheel * 2. For this calculator, we assume a 1:1 motor-to-wheel ratio for steering.
+            const totalTorqueAtWheels = torquePerWheel; // Change this if one motor steers multiple wheels.
+
+            // --- Required torque FROM THE MOTOR ---
+            // This accounts for the mechanical advantage of the gearbox and system inefficiencies.
+            // The gearbox multiplies torque, so the motor needs to provide less.
+            // Efficiency losses mean the motor must produce more torque to compensate.
+            const motorEfficiencyDecimal = values.motorEfficiency / 100;
+            const requiredMotorTorque = (totalTorqueAtWheels * values.safetyFactor) / (values.gearboxRatio * motorEfficiencyDecimal);
+
+            // 3. Display the results
+            outputs.torquePerWheel.textContent = `${torquePerWheel.toFixed(3)} Nm`;
+            outputs.totalTorque.textContent = `${totalTorqueAtWheels.toFixed(3)} Nm`;
+            outputs.motorTorque.textContent = `${requiredMotorTorque.toFixed(3)} Nm`;
+
+            resultsDiv.classList.remove('hidden');
+        });
+
+    </script>
+</body>
+</html>
+
