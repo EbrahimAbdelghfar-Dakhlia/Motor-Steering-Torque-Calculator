@@ -197,7 +197,7 @@
             // The moment arm for the scrub torque is complex. A common engineering approximation
             // is to use a fraction of the wheel width. We'll use 1/4 of the width.
             const scrubMomentArm = values.wheelWidth / 4; 
-            const scrubTorque = frictionalForce * scrubMomentArm;
+            const scrubTorque = frictionalForce * scrubMomentArm*0;
 
             // --- Torque to accelerate the wheel's own inertia ---
             // This is the torque to physically turn the wheel mass itself.
